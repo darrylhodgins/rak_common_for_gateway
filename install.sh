@@ -19,17 +19,20 @@ print_help()
     echo ""
     echo "--chirpstack=[install/not_install]"
     echo "                      Chirpstack, default value is install"
+    echo "--ap=[install/not_install]"
+    echo "                      Access Point, default value is install"
     echo ""
     exit
 }
 
 rpi_model=`do_get_rpi_model`
 
-ARGS=`getopt -o "" -l "help,img,chirpstack:" -- "$@"`
+ARGS=`getopt -o "" -l "help,img,chirpstack:,ap:" -- "$@"`
 
 eval set -- "${ARGS}"
 
 INSTALL_CHIRPSTACK=1
+INSTALL_AP=1
 
 CREATE_IMG=""
 
@@ -64,6 +67,21 @@ while true; do
         fi
         ;;
 
+        --ap)
+        shift;
+        if [[ -n "${1}" ]]; then
+            if [ "not_install" = "${1}" ]; then
+                INSTALL_AP=0
+            elif [ "install" = "${1}" ]; then
+                INSTALL_AP=1
+            else
+                echo "invalid value"
+                exit
+            fi
+            shift;
+        fi
+        ;;
+
         --)
         shift;
 #        echo "Invalid para.1"
@@ -86,10 +104,12 @@ set +e
 write_json_chirpstack_install $INSTALL_CHIRPSTACK
 set -e
 
-pushd ap
-./install.sh $CREATE_IMG
-sleep 1
-popd
+if [ "$INSTALL_AP" = 1 ]; then
+    pushd ap
+    ./install.sh $CREATE_IMG
+    sleep 1
+    popd
+fi
 
 if [ "$INSTALL_CHIRPSTACK" = 1 ]; then
     pushd chirpstack

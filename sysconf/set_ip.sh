@@ -12,13 +12,7 @@ if [ $UID != 0 ]; then
 fi
 
 if [ "$1" = "create_img" ]; then
-    echo "
-# WARNING:Do not delete or modify the following 5 lines!!!
-# RAK_eth0_IP
-interface eth0
-static ip_address=192.168.10.10
-static routers=192.168.10.1" >> /etc/dhcpcd.conf
-
+    echo "TRYING TO SET DHCPD CONF"
 else
     echo ""
 fi
